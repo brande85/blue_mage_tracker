@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blue Mage Grimoire</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0d1117; --bg2:#141b24; --bg3:#1a2535;
+  --border:#2a3a52; --border2:#3a4f6a;
+  --text:#c9d8ee; --text2:#7a9bbf; --text3:#4a6a8a;
+  --accent:#4fc3f7; --accent2:#1e88e5;
+  --gold:#f0c060; --gold2:#c8962a;
+  --green:#4caf84; --green-bg:#0d2318; --green-bd:#1e4a30;
+  --red:#e05555; --red-bg:#1e0d0d; --red-bd:#4a1e1e;
+  --orange:#e07a30; --purple:#9c6dd8; --radius:6px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Crimson Pro',Georgia,serif;font-size:16px;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;z-index:0;background:
+  radial-gradient(ellipse at 20% 10%,rgba(78,139,255,.08) 0%,transparent 50%),
+  radial-gradient(ellipse at 80% 80%,rgba(79,195,247,.06) 0%,transparent 50%),
+  radial-gradient(ellipse at 50% 50%,rgba(156,109,216,.04) 0%,transparent 60%);
+  pointer-events:none}
+.wrapper{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:1.5rem 1rem 4rem}
+
+/* header */
+header{text-align:center;padding:1.5rem 0 1rem;margin-bottom:1.25rem;border-bottom:1px solid var(--border)}
+header h1{font-family:'Cinzel',serif;font-size:clamp(1.4rem,4vw,2rem);font-weight:700;color:var(--gold);letter-spacing:.08em;text-shadow:0 0 30px rgba(240,192,96,.3);margin-bottom:.4rem}
+header p{color:var(--text2);font-size:.95rem;font-style:italic}
+
+/* progress */
+.progress-section{margin-bottom:1.1rem}
+.progress-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem}
+.progress-meta .count{font-family:'Cinzel',serif;font-size:.85rem;color:var(--gold);letter-spacing:.05em}
+.progress-meta .pct{font-size:.85rem;color:var(--text2)}
+.bar-track{height:6px;background:var(--bg3);border-radius:3px;overflow:hidden;border:1px solid var(--border)}
+.bar-fill{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:3px;transition:width .4s ease}
+
+/* totem milestones */
+.milestones{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.1rem}
+.milestone{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:var(--radius);border:1px solid var(--border);background:var(--bg2);font-size:.78rem;transition:background .3s,border-color .3s}
+.milestone.unlocked{background:rgba(240,192,96,.1);border-color:rgba(240,192,96,.4)}
+.milestone.unlocked .ms-icon{color:var(--gold)}
+.milestone .ms-icon{color:var(--text3);font-size:.9rem;transition:color .3s}
+.milestone .ms-label{color:var(--text2);font-family:'Cinzel',serif;letter-spacing:.03em}
+.milestone.unlocked .ms-label{color:var(--gold)}
+.milestone .ms-spell{color:var(--text3);font-style:italic;font-size:.75rem}
+.milestone.unlocked .ms-spell{color:var(--text2)}
+.ms-hdr{font-family:'Cinzel',serif;font-size:.75rem;color:var(--text3);letter-spacing:.06em;margin-bottom:.4rem;text-transform:uppercase}
+
+/* view tabs */
+.view-tabs{display:flex;gap:4px;margin-bottom:1rem}
+.tab-btn{font-family:'Cinzel',serif;font-size:.75rem;letter-spacing:.04em;padding:6px 14px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg2);color:var(--text2);cursor:pointer;transition:all .2s}
+.tab-btn.active{background:rgba(79,195,247,.12);border-color:var(--accent2);color:var(--accent)}
+
+/* controls */
+.controls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:.75rem;align-items:center}
+.level-group{display:flex;align-items:center;gap:8px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:6px 10px}
+.level-group label{font-size:.78rem;color:var(--text2);white-space:nowrap;font-family:'Cinzel',serif;letter-spacing:.04em}
+.level-group input[type=range]{width:90px;accent-color:var(--accent);cursor:pointer}
+.level-val{font-family:'Cinzel',serif;font-size:.9rem;color:var(--gold);min-width:24px;text-align:center}
+input[type=text],select{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'Crimson Pro',serif;font-size:.9rem;padding:6px 10px;outline:none;transition:border-color .2s}
+input[type=text]{flex:1;min-width:130px}
+input[type=text]:focus,select:focus{border-color:var(--accent2)}
+select{cursor:pointer}
+select option{background:var(--bg2)}
+.btn-reset{font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.04em;padding:6px 12px;background:transparent;border:1px solid var(--red-bd);border-radius:var(--radius);color:var(--red);cursor:pointer;transition:background .2s,border-color .2s;margin-left:auto}
+.btn-reset:hover{background:var(--red-bg);border-color:var(--red)}
+
+/* tier legend */
+.tier-legend{display:flex;gap:14px;font-size:.8rem;color:var(--text2);align-items:center;flex-wrap:wrap;padding:.1rem 0 .8rem}
+.tier-legend span{display:flex;gap:4px;align-items:center}
+
+/* spell list view */
+.spell-list{display:flex;flex-direction:column;gap:3px}
+.spell-row{display:grid;grid-template-columns:36px 22px 1fr auto;align-items:start;gap:8px;padding:9px 10px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg2);cursor:pointer;transition:background .15s,border-color .15s;position:relative;overflow:hidden}
+.spell-row::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:transparent;transition:background .2s}
+.spell-row:hover{background:var(--bg3);border-color:var(--border2)}
+.spell-row.learned{background:var(--green-bg);border-color:var(--green-bd)}
+.spell-row.learned::before{background:var(--green)}
+.spell-num{font-family:'Cinzel',serif;font-size:.7rem;color:var(--text3);padding-top:3px;letter-spacing:.03em}
+.spell-check{width:18px;height:18px;border:1.5px solid var(--border2);border-radius:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;transition:background .2s,border-color .2s;font-size:11px;color:transparent}
+.spell-row.learned .spell-check{background:var(--green);border-color:var(--green);color:#fff}
+.spell-name{font-size:1rem;font-weight:500;color:var(--text);line-height:1.2;display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.spell-row.learned .spell-name{color:var(--green)}
+.spell-loc{font-size:.82rem;color:var(--text2);margin-top:2px;line-height:1.4;font-style:italic}
+.spell-note{font-size:.75rem;color:var(--text3);margin-top:2px;line-height:1.4}
+.badges{display:flex;flex-direction:column;gap:3px;align-items:flex-end;flex-shrink:0}
+.badge{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.04em;padding:2px 7px;border-radius:20px;white-space:nowrap;border:1px solid transparent}
+.badge.open{background:rgba(76,175,132,.12);color:var(--green);border-color:rgba(76,175,132,.25)}
+.badge.dungeon{background:rgba(74,99,138,.2);color:var(--text2);border-color:rgba(74,99,138,.35)}
+.badge.trial{background:rgba(224,122,48,.12);color:var(--orange);border-color:rgba(224,122,48,.25)}
+.badge.totem{background:rgba(79,195,247,.1);color:var(--accent);border-color:rgba(79,195,247,.2)}
+.badge.maskedcarnivale{background:rgba(156,109,216,.12);color:var(--purple);border-color:rgba(156,109,216,.25)}
+.badge.lvl{background:rgba(30,42,58,.6);color:var(--text2);border-color:var(--border)}
+.badge.lvl.reach{background:rgba(76,175,132,.1);color:var(--green);border-color:rgba(76,175,132,.2)}
+.badge.lvl.locked{background:rgba(224,85,85,.08);color:var(--red);border-color:rgba(224,85,85,.2)}
+.tier-star{color:var(--gold);font-size:.9rem;line-height:1}
+.tier-diamond{color:var(--accent);font-size:.8rem;line-height:1}
+
+/* zone view */
+.zone-section{margin-bottom:1.25rem}
+.zone-header{display:flex;align-items:center;justify-content:space-between;padding:.6rem .9rem;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);cursor:pointer;user-select:none;margin-bottom:2px}
+.zone-header:hover{background:rgba(79,195,247,.06)}
+.zone-title{font-family:'Cinzel',serif;font-size:.85rem;color:var(--accent);letter-spacing:.04em;display:flex;align-items:center;gap:8px}
+.zone-meta{font-size:.78rem;color:var(--text3);font-style:italic}
+.zone-prog{font-size:.75rem;color:var(--text2)}
+.zone-body{display:none;flex-direction:column;gap:2px;padding-left:4px;margin-bottom:4px}
+.zone-body.open{display:flex}
+.zone-spell-row{display:grid;grid-template-columns:36px 22px 1fr auto;align-items:start;gap:8px;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg2);cursor:pointer;transition:background .15s;position:relative;overflow:hidden}
+.zone-spell-row::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:transparent;transition:background .2s}
+.zone-spell-row:hover{background:var(--bg3)}
+.zone-spell-row.learned{background:var(--green-bg);border-color:var(--green-bd)}
+.zone-spell-row.learned::before{background:var(--green)}
+
+.empty{text-align:center;padding:2rem;color:var(--text3);font-style:italic}
+.footer-note{text-align:center;margin-top:2rem;font-size:.8rem;color:var(--text3);font-style:italic}
+
+@media(max-width:520px){
+  .spell-row,.zone-spell-row{grid-template-columns:28px 18px 1fr auto;gap:5px;padding:7px 7px}
+  .badge{font-size:.58rem;padding:2px 5px}
+  .milestones{gap:4px}
+  .milestone{padding:4px 7px;font-size:.72rem}
+}
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+<header>
+  <h1>⊹ Blue Mage Grimoire ⊹</h1>
+  <p>Track your path through all 124 spells — progress saved automatically</p>
+</header>
+
+<!-- progress -->
+<div class="progress-section">
+  <div class="progress-meta">
+    <span class="count" id="cnt">0 / 124 spells learned</span>
+    <span class="pct" id="pct">0%</span>
+  </div>
+  <div class="bar-track"><div class="bar-fill" id="bar" style="width:0%"></div></div>
+</div>
+
+<!-- totem milestones -->
+<div class="ms-hdr">Whalaqee Totem Milestones</div>
+<div class="milestones" id="milestones"></div>
+
+<!-- view tabs -->
+<div class="view-tabs">
+  <button class="tab-btn active" id="tab-list" onclick="setView('list')">All Spells</button>
+  <button class="tab-btn" id="tab-zone" onclick="setView('zone')">By Zone</button>
+</div>
+
+<!-- controls (list view) -->
+<div id="list-controls">
+  <div class="controls">
+    <div class="level-group">
+      <label>MY LEVEL</label>
+      <input type="range" id="my-level" min="1" max="80" value="33" step="1">
+      <span class="level-val" id="lv-out">33</span>
+    </div>
+    <select id="f-reach">
+      <option value="all">All spells</option>
+      <option value="reach" selected>Reachable now</option>
+      <option value="locked">Not yet reachable</option>
+    </select>
+    <input type="text" id="search" placeholder="Search spells or locations…">
+    <select id="f-status">
+      <option value="all">Any status</option>
+      <option value="unlearned">Not learned</option>
+      <option value="learned">Learned</option>
+    </select>
+    <select id="f-type">
+      <option value="all">All sources</option>
+      <option value="open">Open world</option>
+      <option value="dungeon">Dungeon / Raid</option>
+      <option value="trial">Trial</option>
+      <option value="totem">Totem</option>
+      <option value="maskedcarnivale">Masked Carnivale</option>
+    </select>
+    <select id="f-tier">
+      <option value="all">All tiers</option>
+      <option value="S">⭐ S-tier only</option>
+      <option value="A">◆ A-tier only</option>
+      <option value="SA">⭐◆ S + A tier</option>
+    </select>
+    <select id="f-sort">
+      <option value="level-asc" selected>Level: low → high</option>
+      <option value="level-desc">Level: high → low</option>
+      <option value="number">Spell number</option>
+      <option value="name">Name A–Z</option>
+    </select>
+    <button class="btn-reset" id="reset-btn">Reset all</button>
+  </div>
+  <div class="tier-legend">
+    <span><span class="tier-star">⭐</span> S-tier — Essential / core to most builds</span>
+    <span><span class="tier-diamond">◆</span> A-tier — Excellent / highly versatile</span>
+  </div>
+</div>
+
+<!-- zone controls -->
+<div id="zone-controls" style="display:none">
+  <div class="controls">
+    <div class="level-group">
+      <label>MY LEVEL</label>
+      <input type="range" id="my-level-z" min="1" max="80" value="33" step="1">
+      <span class="level-val" id="lv-out-z">33</span>
+    </div>
+    <select id="fz-status">
+      <option value="all">Any status</option>
+      <option value="unlearned">Not learned</option>
+      <option value="learned">Learned</option>
+    </select>
+    <input type="text" id="search-z" placeholder="Search zones or spells…">
+  </div>
+</div>
+
+<!-- spell list -->
+<div class="spell-list" id="spell-list"></div>
+
+<!-- zone view -->
+<div id="zone-view" style="display:none"></div>
+
+<p class="footer-note">Progress is saved to this browser automatically via localStorage.</p>
+</div>
+
+<script>
+const STORAGE_KEY = 'blu_tracker_v1';
+
+// ─── SPELL DATA ────────────────────────────────────────────────────────────
+// zone: primary zone/duty for grouping. Multiple zones separated with |
+const SPELLS = [
+  {n:1,  name:"Water Cannon",          type:"totem",          tier:'S',   minLv:1,  zone:"Ul'dah — Steps of Thal",        loc:"Unlocked by default", note:""},
+  {n:2,  name:"Flame Thrower",         type:"dungeon",        tier:null,  minLv:50, zone:"Brayflox's Longstop (Hard)",    loc:"Gobmachine G-VI (Brayflox's Longstop Hard); Magitek Gunship (Keeper of the Lake); Omega (Alphascape V3.0)", note:""},
+  {n:3,  name:"Aqua Breath",           type:"trial",          tier:null,  minLv:50, zone:"The Dragon's Neck",             loc:"Ultros (The Dragon's Neck); Leviathan (The Whorleater Hard/EX)", note:""},
+  {n:4,  name:"Flying Frenzy",         type:"dungeon",        tier:null,  minLv:50, zone:"Pharos Sirius",                 loc:"Zu (Pharos Sirius); Cornu (N. Thanalan Rank A Elite Mark)", note:"Break two eggs first to trigger Zu's enrage"},
+  {n:5,  name:"Drill Cannons",         type:"open",           tier:null,  minLv:46, zone:"Northern Thanalan",             loc:"Magitek Vanguard H-2 — Northern Thanalan (x:16, y:15); Castrum Meridianum", note:""},
+  {n:6,  name:"High Voltage",          type:"dungeon",        tier:null,  minLv:50, zone:"The Binding Coil of Bahamut",   loc:"ADS (Binding Coil of Bahamut T1/T2); Bestial Node (Masked Carnivale Stage 15)", note:""},
+  {n:7,  name:"Loom",                  type:"open",           tier:null,  minLv:50, zone:"Northern Thanalan",             loc:"Flame Sergeant Dalvag — N. Thanalan (Rank B Mark); Baalzephon (Lost City of Amdapor); Tam-Tara Deepcroft Hard", note:"Move away after engaging to trigger teleport"},
+  {n:8,  name:"Final Sting",           type:"open",           tier:'S',   minLv:13, zone:"Middle La Noscea",              loc:"Killer Wespe — Middle La Noscea (x:15, y:15); Temple Bee (Sunken Temple of Qarn)", note:""},
+  {n:9,  name:"Song of Torment",       type:"dungeon",        tier:'S',   minLv:50, zone:"Pharos Sirius",                 loc:"Siren (Pharos Sirius)", note:""},
+  {n:10, name:"Glower",                type:"dungeon",        tier:'A',   minLv:47, zone:"The Aurum Vale",                loc:"Coincounter (The Aurum Vale)", note:"100% learn chance even unsynced — required for level 40 job quest"},
+  {n:11, name:"Plaincracker",          type:"open",           tier:'A',   minLv:28, zone:"North Shroud",                  loc:"Clay Golem — North Shroud (x:19, y:29); Sandstone Golem — S. Thanalan (x:22, y:12); Basalt Golem — Outer La Noscea", note:""},
+  {n:12, name:"Bristle",               type:"open",           tier:'S',   minLv:5,  zone:"East Shroud",                   loc:"Wild Boar — East Shroud (x:18, y:24)", note:"Boosts potency of all Spells by 50% — core spell"},
+  {n:13, name:"White Wind",            type:"totem",          tier:'S',   minLv:1,  zone:"Ul'dah — Steps of Thal",        loc:"Whalaqee Totem — learn 10 spells (Wayward Gaheel Ja, Ul'dah Steps of Thal x:12.5, y:12.9)", note:"Critical healing spell; use Blood Drain to keep MP up"},
+  {n:14, name:"Level 5 Petrify",       type:"dungeon",        tier:null,  minLv:28, zone:"Haukke Manor",                  loc:"Manor Sentry (Haukke Manor)", note:""},
+  {n:15, name:"Sharpened Knife",       type:"dungeon",        tier:'S',   minLv:50, zone:"The Wanderer's Palace",         loc:"Tonberry King (The Wanderer's Palace); Marberry (Upper La Noscea Rank A)", note:""},
+  {n:16, name:"Ice Spikes",            type:"open",           tier:'A',   minLv:9,  zone:"Central Shroud",                loc:"Trickster Imp — Central Shroud (x:27, y:24); Vandalous Imp — Eastern Thanalan; Manor Jester (Haukke Manor)", note:""},
+  {n:17, name:"Blood Drain",           type:"open",           tier:'A',   minLv:5,  zone:"Central Shroud",                loc:"Chigoe — Central Shroud (x:25, y:20); Cave Bat — Lower La Noscea (x:27, y:16)", note:"Critical for MP management alongside White Wind and Diamondback"},
+  {n:18, name:"Acorn Bomb",            type:"open",           tier:null,  minLv:12, zone:"North Shroud",                  loc:"Treant Sapling — North Shroud (x:24, y:28), Central Shroud, East Shroud", note:"Mostly obsolete after Sleep was added"},
+  {n:19, name:"Bomb Toss",             type:"open",           tier:null,  minLv:5,  zone:"Middle La Noscea",              loc:"Goblin Fisher & Gambler — Middle La Noscea (x:23, y:21)", note:""},
+  {n:20, name:"Off-guard",             type:"totem",          tier:'S',   minLv:1,  zone:"Ul'dah — Steps of Thal",        loc:"Whalaqee Totem — learn 5 spells", note:"Shares cooldown with Peculiar Light"},
+  {n:21, name:"Self-destruct",         type:"open",           tier:'A',   minLv:12, zone:"Western Thanalan",              loc:"Glide Bomb — Western Thanalan (x:27, y:16); Bomb enemies in Copperbell Mines, Halatali, Cutter's Cry", note:""},
+  {n:22, name:"Transfusion",           type:"totem",          tier:null,  minLv:1,  zone:"Ul'dah — Steps of Thal",        loc:"Whalaqee Totem — learn 20 spells", note:"Generally considered the most useless spell"},
+  {n:23, name:"Faze",                  type:"open",           tier:null,  minLv:6,  zone:"Central Thanalan",              loc:"Qiqirn Shellsweeper — Central Thanalan (x:9, y:19); Qiqirn Eggdigger — Lower La Noscea (x:19, y:35)", note:""},
+  {n:24, name:"Flying Sardine",        type:"open",           tier:'A',   minLv:30, zone:"Eastern La Noscea",             loc:"Apkallu — Eastern La Noscea (x:27, y:35)", note:"Useful for tagging and baiting enemies"},
+  {n:25, name:"Snort",                 type:"trial",          tier:null,  minLv:50, zone:"The Dragon's Neck",             loc:"Typhon (The Dragon's Neck); Typhon (Masked Carnivale Stage 20 or 27)", note:"Typhon uses it late in the fight — be patient"},
+  {n:26, name:"4-tonze Weight",        type:"trial",          tier:'A',   minLv:50, zone:"The Dragon's Neck",             loc:"Ultros (The Dragon's Neck)", note:"Only spell locked behind the Hildibrand questline"},
+  {n:27, name:"The Look",              type:"open",           tier:null,  minLv:45, zone:"Mor Dhona",                     loc:"Denizen of the Dark — Mor Dhona levequest; Anantaboga (Amdapor Keep); Valefor (Labyrinth of the Ancients)", note:""},
+  {n:28, name:"Bad Breath",            type:"open",           tier:'A',   minLv:31, zone:"Central Shroud",                loc:"Stroper — Central Shroud (x:13, y:21), South Shroud (x:20, y:28); Morbol (Aurum Vale)", note:"Damage down on all enemies — functions like Reprisal"},
+  {n:29, name:"Diamondback",           type:"dungeon",        tier:'A',   minLv:50, zone:"The Stone Vigil (Hard)",        loc:"Cuca Fera (The Stone Vigil Hard); Horde Armored Dragon (The Steps of Faith)", note:"Cannot move for 10s; mitigation twice as effective as Tank LB3"},
+  {n:30, name:"Mighty Guard",          type:"totem",          tier:'A',   minLv:1,  zone:"Ul'dah — Steps of Thal",        loc:"Whalaqee Totem — learn 10 spells", note:"Reduces damage dealt by 40% — use only as tank or with Basic Instinct"},
+  {n:31, name:"Sticky Tongue",         type:"open",           tier:null,  minLv:2,  zone:"Central Thanalan",              loc:"Toxic Toad — Central Thanalan (x:27, y:19); Laughing Toad — Western Thanalan (x:15, y:6)", note:"Important for CoB T4 and some Masked Carnivale stages"},
+  {n:32, name:"Toad Oil",              type:"open",           tier:null,  minLv:2,  zone:"Western Thanalan",              loc:"Giggling Gigantoad — Western Thanalan (x:15, y:7)", note:"Mostly a bait spell"},
+  {n:33, name:"The Ram's Voice",       type:"dungeon",        tier:'S',   minLv:38, zone:"Cutter's Cry",                  loc:"Chimera (Cutter's Cry); Dhorme Chimera (A Relic Reborn: The Chimera)", note:"Combo with Ultravibration for instant-kill AoE"},
+  {n:34, name:"The Dragon's Voice",    type:"dungeon",        tier:null,  minLv:38, zone:"Cutter's Cry",                  loc:"Chimera (Cutter's Cry); Dhorme Chimera (A Relic Reborn: The Chimera)", note:"Large donut AoE pattern"},
+  {n:35, name:"Missile",               type:"dungeon",        tier:'S',   minLv:50, zone:"The Binding Coil of Bahamut",   loc:"Enkidu (Battle in the Big Keep); Guardian (Sigmascape V3.0)", note:"~67% accuracy; reduces HP by 50% of current HP"},
+  {n:36, name:"1000 Needles",          type:"open",           tier:null,  minLv:19, zone:"Southern Thanalan",             loc:"Sabotender Bailaor — Southern Thanalan (x:15, y:15)", note:"Great for leveling early on"},
+  {n:37, name:"Ink Jet",               type:"dungeon",        tier:null,  minLv:50, zone:"Sastasha (Hard)",               loc:"Kraken (Sastasha Hard)", note:""},
+  {n:38, name:"Fire Angon",            type:"dungeon",        tier:null,  minLv:50, zone:"The Wanderer's Palace (Hard)",  loc:"Frumious Koheel Ja (The Wanderer's Palace Hard)", note:""},
+  {n:39, name:"Moon Flute",            type:"maskedcarnivale",tier:'S',   minLv:50, zone:"Masked Carnivale",              loc:"Whalaqee Totem — complete 10 Masked Carnivale stages", note:"Core DPS spell — 50% damage buff for 15s"},
+  {n:40, name:"Tail Screw",            type:"dungeon",        tier:null,  minLv:50, zone:"Sastasha (Hard)",               loc:"Karlabos (Sastasha Hard)", note:"~10% accuracy"},
+  {n:41, name:"Mind Blast",            type:"dungeon",        tier:null,  minLv:16, zone:"The Tam-Tara Deepcroft",        loc:"Galvanth the Dominator (The Tam-Tara Deepcroft)", note:"100% learn chance — required for level 20 job quest"},
+  {n:42, name:"Doom",                  type:"maskedcarnivale",tier:null,  minLv:50, zone:"Masked Carnivale",              loc:"Whalaqee Totem — clear 20 Masked Carnivale stages", note:"~33% accuracy"},
+  {n:43, name:"Peculiar Light",        type:"open",           tier:'A',   minLv:45, zone:"Mor Dhona",                    loc:"Lentic Mudpuppy — Mor Dhona (x:13, y:10)", note:"Shares cooldown with Off-guard"},
+  {n:44, name:"Feather Rain",          type:"trial",          tier:'A',   minLv:50, zone:"The Howling Eye",               loc:"Garuda (The Howling Eye Extreme)", note:"Shares cooldown with Eruption; may be easier unsynced"},
+  {n:45, name:"Eruption",              type:"trial",          tier:'A',   minLv:50, zone:"The Bowl of Embers",            loc:"Ifrit (The Bowl of Embers Normal, Hard, or Extreme)", note:"Shares cooldown with Feather Rain; learnable solo with Mighty Guard + White Wind + 1000 Needles"},
+  {n:46, name:"Mountain Buster",       type:"trial",          tier:null,  minLv:50, zone:"The Navel",                    loc:"Titan (The Navel Hard or Extreme)", note:"Shares cooldown with Shock Strike"},
+  {n:47, name:"Shock Strike",          type:"trial",          tier:'A',   minLv:50, zone:"The Striking Tree",             loc:"Ramuh (The Striking Tree Hard or Extreme)", note:"Shares cooldown with Mountain Buster"},
+  {n:48, name:"Glass Dance",           type:"trial",          tier:'A',   minLv:50, zone:"Akh Afah Amphitheatre",         loc:"Shiva (Akh Afah Amphitheatre Extreme)", note:"Shares cooldown with Veil of the Whorl; may be easier unsynced"},
+  {n:49, name:"Veil of the Whorl",     type:"trial",          tier:null,  minLv:50, zone:"The Whorleater",                loc:"Leviathan (The Whorleater Hard or Extreme)", note:"Shares cooldown with Glass Dance"},
+  {n:50, name:"Alpine Draft",          type:"open",           tier:'A',   minLv:50, zone:"The Sea of Clouds",             loc:"Griffin — The Sea of Clouds (x:36, y:9); Opinicus (The Dusk Vigil)", note:""},
+  {n:51, name:"Protean Wave",          type:"dungeon",        tier:null,  minLv:57, zone:"Alexander: Arm of the Father",  loc:"Living Liquid (Alexander: Arm of the Father); Shikigami of the Undertow (Masked Carnivale Stage 29)", note:"Learn from the tornadoes when they despawn"},
+  {n:52, name:"Northerlies",           type:"open",           tier:'A',   minLv:51, zone:"Coerthas Western Highlands",    loc:"Yeti enemies — Coerthas Western Highlands (x:20, y:31) & (x:17, y:27); Snowcloak", note:""},
+  {n:53, name:"Electrogenesis",        type:"open",           tier:'A',   minLv:50, zone:"The Sea of Clouds",             loc:"Conodont — The Sea of Clouds (x:26, y:33)", note:"Great AoE spell"},
+  {n:54, name:"Kaltstrahl",            type:"dungeon",        tier:'A',   minLv:57, zone:"Alexander: Fist of the Father", loc:"Faust/Strum Dolls (Alexander: Fist of the Father); Jagd Doll (Alexander: Cuff of the Father)", note:""},
+  {n:55, name:"Abyssal Transfixion",   type:"dungeon",        tier:'A',   minLv:50, zone:"Haukke Manor (Hard)",           loc:"Arch Demon — Foundation levequest; Ash (Haukke Manor Hard)", note:""},
+  {n:56, name:"Chirp",                 type:"open",           tier:null,  minLv:50, zone:"The Sea of Clouds",             loc:"Paissa — The Sea of Clouds (x:19, y:35)", note:"Mostly obsolete after Sleep was added"},
+  {n:57, name:"Eerie Soundwave",       type:"open",           tier:null,  minLv:50, zone:"Azys Lla",                      loc:"Empuse — Azys Lla (x:30, y:12); Enkidu (Battle in the Big Keep)", note:""},
+  {n:58, name:"Pom Cure",              type:"trial",          tier:'A',   minLv:50, zone:"Thornmarch",                    loc:"Furryfoot Kupil Kipp (Thornmarch Hard or Extreme)", note:""},
+  {n:59, name:"Gobskin",               type:"dungeon",        tier:'S',   minLv:60, zone:"Alexander: Breath of the Creator", loc:"Alexandrian Hider (Alexander: Breath of the Creator)", note:"From trash mobs before the boss — easy solo synced"},
+  {n:60, name:"Magic Hammer",          type:"dungeon",        tier:'A',   minLv:60, zone:"The Great Gubal Library (Hard)",loc:"Apanda (The Great Gubal Library Hard); Epilogi (Masked Carnivale Stage 24)", note:"Shares cooldown with Candy Cane"},
+  {n:61, name:"Avail",                 type:"dungeon",        tier:null,  minLv:57, zone:"Saint Mocianne's Arboretum",    loc:"Queen Hawk (Saint Mocianne's Arboretum)", note:""},
+  {n:62, name:"Frog Legs",             type:"open",           tier:null,  minLv:59, zone:"The Dravanian Hinterlands",     loc:"Poroggo — The Dravanian Hinterlands (x:12, y:35)", note:"Required for Blue Mage Log unlock"},
+  {n:63, name:"Sonic Boom",            type:"open",           tier:'S',   minLv:50, zone:"The Sea of Clouds",             loc:"Anzu — The Sea of Clouds (x:21, y:6); Zu (Pharos Sirius)", note:"Best reliable filler spell"},
+  {n:64, name:"Whistle",               type:"open",           tier:'S',   minLv:50, zone:"The Sea of Clouds",             loc:"Dhalmel — The Sea of Clouds (x:16, y:30)", note:"Boosts Physical Spell potency by 80% — pairs with Bristle"},
+  {n:65, name:"White Knight's Tour",   type:"dungeon",        tier:null,  minLv:57, zone:"The Vault",                    loc:"White Knight (The Vault)", note:""},
+  {n:66, name:"Black Knight's Tour",   type:"dungeon",        tier:null,  minLv:57, zone:"The Vault",                    loc:"Black Knight (The Vault)", note:""},
+  {n:67, name:"Level 5 Death",         type:"dungeon",        tier:null,  minLv:59, zone:"The Great Gubal Library",       loc:"Page 64 (The Great Gubal Library)", note:"~90% accuracy; enemy can take a long time to cast — wait for it"},
+  {n:68, name:"Launcher",              type:"dungeon",        tier:null,  minLv:60, zone:"Baelsar's Wall",                loc:"Armored Weapon (Baelsar's Wall); Doman Armored Weapon (Doma Castle)", note:"100% accuracy"},
+  {n:69, name:"Perpetual Ray",         type:"dungeon",        tier:null,  minLv:57, zone:"Alexander: Burden of the Father",loc:"The Manipulator (Alexander: Burden of the Father)", note:"Can cheese certain fights like Diabolos in Dun Scaith"},
+  {n:70, name:"Cactguard",             type:"dungeon",        tier:null,  minLv:50, zone:"Sunken Temple of Qarn (Hard)",  loc:"Sabotender Guardia (Sunken Temple of Qarn Hard)", note:""},
+  {n:71, name:"Revenge Blast",         type:"totem",          tier:null,  minLv:1,  zone:"Ul'dah — Steps of Thal",        loc:"Whalaqee Totem — learn 50 spells", note:""},
+  {n:72, name:"Angel Whisper",         type:"maskedcarnivale",tier:'S',   minLv:50, zone:"Masked Carnivale",              loc:"Whalaqee Totem — clear 30 Masked Carnivale stages", note:""},
+  {n:73, name:"Exuviation",            type:"open",           tier:'A',   minLv:50, zone:"The Sea of Clouds",             loc:"Abalathian Wamoura (The Sea of Clouds); Wamoura (Lost City of Amdapor)", note:""},
+  {n:74, name:"Reflux",                type:"open",           tier:null,  minLv:50, zone:"The Churning Mists",            loc:"Cloud Wyvern — The Churning Mists (x:26, y:28)", note:""},
+  {n:75, name:"Devour",                type:"dungeon",        tier:'A',   minLv:50, zone:"The Lost City of Amdapor",      loc:"Decaying Gourmand (Lost City of Amdapor); Caduceus (Binding Coil T1)", note:""},
+  {n:76, name:"Condensed Libra",       type:"dungeon",        tier:'A',   minLv:60, zone:"Alexander: Eyes of the Creator",loc:"Ozma (Alexander: Eyes of the Creator)", note:""},
+  {n:77, name:"Aetheric Mimicry",      type:"dungeon",        tier:'S',   minLv:60, zone:"Alexander: Heart of the Creator",loc:"Subordinate/Blades adds (Alexander: Heart of the Creator, first boss)", note:"Easier unsynced — comes from infinitely spawning adds"},
+  {n:78, name:"Surpanakha",            type:"dungeon",        tier:'S',   minLv:60, zone:"The Lost City of Amdapor (Hard)",loc:"Diabolos (The Lost City of Amdapor Hard)", note:""},
+  {n:79, name:"Quasar",                type:"dungeon",        tier:null,  minLv:57, zone:"Alexander: Burden of the Son",  loc:"Brute Justice (Alexander: Burden of the Son)", note:""},
+  {n:80, name:"J Kick",                type:"dungeon",        tier:null,  minLv:60, zone:"Alexander: Heart of the Creator",loc:"Curtana (Alexander: Heart of the Creator)", note:""},
+  {n:81, name:"Triple Trident",        type:"open",           tier:'A',   minLv:64, zone:"Yanxia",                       loc:"Ebisu Catfish — Yanxia (x:28, y:6)", note:""},
+  {n:82, name:"Tingle",                type:"open",           tier:'A',   minLv:62, zone:"The Ruby Sea",                  loc:"Lupin — The Ruby Sea", note:""},
+  {n:83, name:"Tatami-gaeshi",         type:"open",           tier:'A',   minLv:64, zone:"Yanxia",                       loc:"Tengu — Yanxia open world or Masked Carnivale Stage 28", note:""},
+  {n:84, name:"Cold Fog",              type:"open",           tier:null,  minLv:60, zone:"The Fringes",                   loc:"Leshy — The Fringes", note:""},
+  {n:85, name:"Whistle Snap",          type:"open",           tier:null,  minLv:63, zone:"The Fringes",                   loc:"Coeurl — Gyr Abania region", note:""},
+  {n:86, name:"Tail Wind",             type:"open",           tier:null,  minLv:60, zone:"The Fringes",                   loc:"Ananta Warwolf — The Fringes", note:""},
+  {n:87, name:"Death Knell",           type:"dungeon",        tier:null,  minLv:63, zone:"Shisui of the Violet Tides",    loc:"Phantom (Shisui of the Violet Tides)", note:""},
+  {n:88, name:"Peripheral Synthesis",  type:"dungeon",        tier:null,  minLv:67, zone:"The Grand Cosmos",              loc:"Forgiven Obscenity (The Grand Cosmos)", note:""},
+  {n:89, name:"Phantom Flurry",        type:"trial",          tier:null,  minLv:67, zone:"Emanation",                    loc:"Tsukuyomi (Emanation Extreme)", note:""},
+  {n:90, name:"Night Bloom",           type:"trial",          tier:'S',   minLv:67, zone:"Emanation",                    loc:"Tsukuyomi (Emanation Extreme)", note:"Core damage cooldown — important for endgame"},
+  {n:91, name:"Basic Instinct",        type:"open",           tier:'S',   minLv:24, zone:"Upper La Noscea",               loc:"Master Coeurl — Upper La Noscea (x:9, y:21)", note:"Doubles damage and movement speed when soloing a duty — absolutely essential"},
+  {n:92, name:"Mind Field",            type:"dungeon",        tier:null,  minLv:50, zone:"World of Darkness",             loc:"Storge (Syrcus Tower) or Pazuzu (Void Ark)", note:""},
+  {n:93, name:"The Rose of Destruction",type:"trial",         tier:null,  minLv:70, zone:"The Dancing Plague",            loc:"Titania (The Dancing Plague)", note:"High potency damage ability"},
+  {n:94, name:"Goblin Punch",          type:"open",           tier:null,  minLv:60, zone:"The Dravanian Hinterlands",     loc:"Various Goblins — The Dravanian Hinterlands, Il Mheg", note:""},
+  {n:95, name:"Ultravibration",        type:"open",           tier:'S',   minLv:68, zone:"Il Mheg",                      loc:"Biast — Il Mheg; Batsquatch — Il Mheg", note:"Instant-kill AoE when combined with Ram's Voice"},
+  {n:96, name:"Blaze",                 type:"dungeon",        tier:null,  minLv:70, zone:"Dohn Mheg",                    loc:"Brionac (Dohn Mheg)", note:""},
+  {n:97, name:"Mueller Dive",          type:"dungeon",        tier:null,  minLv:70, zone:"The Dancing Plague",            loc:"Titania (The Dancing Plague)", note:""},
+  {n:98, name:"Tornado",               type:"trial",          tier:null,  minLv:70, zone:"The Dancing Plague",            loc:"Titania (The Dancing Plague)", note:""},
+  {n:99, name:"Glossolalia",           type:"dungeon",        tier:null,  minLv:70, zone:"The Grand Cosmos",              loc:"Forgiven Obscenity (The Grand Cosmos) or Seto (Holminster Switch)", note:""},
+  {n:100,name:"Surpanakha (Upgrade)",  type:"dungeon",        tier:null,  minLv:60, zone:"The Lost City of Amdapor (Hard)",loc:"Diabolos Hollow (The Lost City of Amdapor Hard)", note:""},
+  {n:101,name:"Force Field",           type:"trial",          tier:'S',   minLv:67, zone:"Containment Bay S1T7",          loc:"Sephirot (Containment Bay S1T7 Extreme); or Whalaqee Totem — learn 120 spells", note:""},
+  {n:102,name:"Winged Reprobation",    type:"trial",          tier:null,  minLv:70, zone:"The Crown of the Immaculate",   loc:"Innocence (The Crown of the Immaculate)", note:""},
+  {n:103,name:"Laser Eye",             type:"trial",          tier:null,  minLv:80, zone:"Eden's Promise: Eternity",      loc:"Eden's Promise (Eden's Promise: Eternity)", note:""},
+  {n:104,name:"Candy Cane",            type:"dungeon",        tier:null,  minLv:70, zone:"Dohn Mheg",                    loc:"Aenc Thon, Lord of the Lingering Gaze (Dohn Mheg)", note:"Shares cooldown with Magic Hammer"},
+  {n:105,name:"Mortal Flame",          type:"dungeon",        tier:null,  minLv:70, zone:"The Grand Cosmos",              loc:"Lugus (The Grand Cosmos)", note:"Core damage over time spell"},
+  {n:106,name:"Sea Shanty",            type:"dungeon",        tier:null,  minLv:70, zone:"Matoya's Relict",               loc:"Nixie (Matoya's Relict)", note:""},
+  {n:107,name:"Apokalypsis",           type:"dungeon",        tier:null,  minLv:70, zone:"Amaurot",                      loc:"Therion (Amaurot)", note:""},
+  {n:108,name:"Being Mortal",          type:"trial",          tier:null,  minLv:70, zone:"The Dancing Plague",            loc:"Titania (The Dancing Plague)", note:""},
+  {n:109,name:"Dragon Force",          type:"dungeon",        tier:null,  minLv:70, zone:"The Steps of Faith",            loc:"Horde Armored Dragon (Steps of Faith) or Wreath of Snakes Extreme", note:""},
+  {n:110,name:"Flame Cannon",          type:"dungeon",        tier:null,  minLv:70, zone:"The Burn",                     loc:"Inferno Drake (The Burn)", note:""},
+  {n:111,name:"Breath of Magic",       type:"dungeon",        tier:'A',   minLv:67, zone:"Containment Bay P1T6",          loc:"Dawon (Containment Bay P1T6 or Extreme)", note:"Core DoT spell for endgame rotations"},
+  {n:112,name:"Schiltron",             type:"dungeon",        tier:null,  minLv:67, zone:"Deltascape V4.0",               loc:"Hashmal (Deltascape V4.0 or Savage)", note:""},
+  {n:113,name:"Rehydration",           type:"dungeon",        tier:'A',   minLv:70, zone:"Il Mheg",                      loc:"Batsquatch (Il Mheg) or Forgiven Obscenity (Grand Cosmos)", note:""},
+  {n:114,name:"Aetherial Spark",       type:"trial",          tier:null,  minLv:50, zone:"Akh Afah Amphitheatre",         loc:"Shiva (Akh Afah Amphitheatre Extreme) or Ruby Weapon", note:""},
+  {n:115,name:"Hadal Bore",            type:"dungeon",        tier:null,  minLv:70, zone:"The Burn",                     loc:"Thaliak (The Burn)", note:""},
+  {n:116,name:"Malediction of Water",  type:"dungeon",        tier:null,  minLv:57, zone:"Void Ark",                     loc:"Calofisteri (Void Ark)", note:""},
+  {n:117,name:"Peripheral Synthesis 2",type:"dungeon",        tier:null,  minLv:67, zone:"The Grand Cosmos",              loc:"Forgiven Obscenity (The Grand Cosmos)", note:""},
+  {n:118,name:"Both Ends",             type:"trial",          tier:'A',   minLv:72, zone:"Eden's Verse: Iconoclasm",      loc:"Eden's Verse (Eden's Verse: Iconoclasm)", note:"High potency finisher spell"},
+  {n:119,name:"Peat Peat",             type:"dungeon",        tier:null,  minLv:70, zone:"Amaurot",                      loc:"Mnemon (Amaurot)", note:""},
+  {n:120,name:"Saintly Beam",          type:"trial",          tier:null,  minLv:70, zone:"The Crown of the Immaculate",   loc:"Innocence (The Crown of the Immaculate Extreme)", note:""},
+  {n:121,name:"Frog Legs (Lv80)",      type:"dungeon",        tier:null,  minLv:79, zone:"The Twinning",                  loc:"Octomammoth (The Twinning)", note:""},
+  {n:122,name:"Miracle of Nature",     type:"open",           tier:null,  minLv:87, zone:"Elpis",                        loc:"Meracydian Spriggan (Elpis)", note:"Requires Endwalker MSQ completion"},
+  {n:123,name:"Hairy Tornado",         type:"open",           tier:null,  minLv:83, zone:"Labyrinthos",                   loc:"Spiked Roader (Labyrinthos)", note:"Requires Endwalker MSQ completion"},
+  {n:124,name:"Toad Oil (Upgrade)",    type:"dungeon",        tier:null,  minLv:79, zone:"The Fell Court of Troia",       loc:"Indigo Nebula (The Fell Court of Troia)", note:""},
+];
+
+// ─── TOTEM MILESTONES ────────────────────────────────────────────────────────
+const MILESTONES = [
+  { count:5,   spells:[20],     label:"5 spells",  rewards:"Off-guard" },
+  { count:10,  spells:[13,30],  label:"10 spells", rewards:"White Wind, Mighty Guard" },
+  { count:20,  spells:[22],     label:"20 spells", rewards:"Transfusion" },
+  { count:50,  spells:[71],     label:"50 spells", rewards:"Revenge Blast" },
+  { count:70,  spells:[94],     label:"70 spells", rewards:"Basic Instinct" },
+  { count:120, spells:[101],    label:"120 spells",rewards:"Force Field" },
+];
+// Masked Carnivale totem milestones (tracked separately by count of MC clears — approximated here as spell count)
+const MC_MILESTONES = [
+  { count:10, spells:[39], label:"10 stages cleared", rewards:"Moon Flute" },
+  { count:20, spells:[42], label:"20 stages cleared", rewards:"Doom" },
+  { count:30, spells:[72], label:"30 stages cleared", rewards:"Angel Whisper" },
+];
+
+const TYPE_LABELS = {totem:'Totem',trial:'Trial',open:'Open world',dungeon:'Dungeon / Raid',maskedcarnivale:'Masked Carnivale'};
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let learned = new Set();
+let currentView = 'list';
+let zoneOpen = {};
+
+function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify([...learned])); }
+function load() {
+  try { const r = localStorage.getItem(STORAGE_KEY); if (r) learned = new Set(JSON.parse(r)); } catch(e) {}
+}
+
+// ─── VIEW TOGGLE ──────────────────────────────────────────────────────────────
+function setView(v) {
+  currentView = v;
+  document.getElementById('tab-list').classList.toggle('active', v==='list');
+  document.getElementById('tab-zone').classList.toggle('active', v==='zone');
+  document.getElementById('list-controls').style.display = v==='list' ? '' : 'none';
+  document.getElementById('zone-controls').style.display = v==='zone' ? '' : 'none';
+  document.getElementById('spell-list').style.display    = v==='list' ? '' : 'none';
+  document.getElementById('zone-view').style.display     = v==='zone' ? '' : 'none';
+  render();
+}
+
+// ─── TOGGLE SPELL ─────────────────────────────────────────────────────────────
+function toggle(n) {
+  if (learned.has(n)) learned.delete(n); else learned.add(n);
+  save(); render();
+}
+
+// ─── TIER ICON ────────────────────────────────────────────────────────────────
+function tierIcon(t) {
+  if (t === 'S') return '<span class="tier-star" title="S-tier: Essential spell">⭐</span>';
+  if (t === 'A') return '<span class="tier-diamond" title="A-tier: Highly recommended">◆</span>';
+  return '';
+}
+
+// ─── MILESTONES RENDER ────────────────────────────────────────────────────────
+function renderMilestones() {
+  const cnt = learned.size;
+  const el = document.getElementById('milestones');
+  let html = '';
+  MILESTONES.forEach(m => {
+    const done = cnt >= m.count;
+    html += `<div class="milestone${done?' unlocked':''}">
+      <span class="ms-icon">${done?'✦':'◇'}</span>
+      <span>
+        <span class="ms-label">${m.label}</span>
+        <span class="ms-spell"> — ${m.rewards}</span>
+      </span>
+    </div>`;
+  });
+  // separator
+  html += `<div style="width:100%;height:0;flex-basis:100%;margin:0"></div>`;
+  html += `<div class="ms-hdr" style="width:100%;padding:.6rem 0 .2rem">Masked Carnivale Totems</div>`;
+  MC_MILESTONES.forEach(m => {
+    // approximate: count how many MC-type spells are learned as a proxy
+    const mcLearned = [...learned].filter(n => SPELLS.find(s=>s.n===n&&s.type==='maskedcarnivale')).length;
+    const done = mcLearned >= (m.count / 10); // rough approximation since we don't track stage clears
+    html += `<div class="milestone${done?' unlocked':''}">
+      <span class="ms-icon">${done?'✦':'◇'}</span>
+      <span>
+        <span class="ms-label">${m.label}</span>
+        <span class="ms-spell"> — ${m.rewards}</span>
+      </span>
+    </div>`;
+  });
+  el.innerHTML = html;
+}
+
+// ─── MAIN RENDER ─────────────────────────────────────────────────────────────
+function render() {
+  const cnt = learned.size;
+  document.getElementById('cnt').textContent = `${cnt} / 124 spells learned`;
+  const pct = Math.round(cnt/124*100);
+  document.getElementById('pct').textContent = pct+'%';
+  document.getElementById('bar').style.width = pct+'%';
+  renderMilestones();
+  if (currentView === 'list') renderList();
+  else renderZone();
+}
+
+// ─── LIST VIEW ────────────────────────────────────────────────────────────────
+function renderList() {
+  const myLv    = +document.getElementById('my-level').value;
+  document.getElementById('lv-out').textContent = myLv;
+  const search  = document.getElementById('search').value.toLowerCase();
+  const fReach  = document.getElementById('f-reach').value;
+  const fStatus = document.getElementById('f-status').value;
+  const fType   = document.getElementById('f-type').value;
+  const fTier   = document.getElementById('f-tier').value;
+  const fSort   = document.getElementById('f-sort').value;
+
+  let list = SPELLS.filter(s => {
+    const reach = s.minLv <= myLv;
+    if (fReach  === 'reach'    && !reach)            return false;
+    if (fReach  === 'locked'   && reach)              return false;
+    if (fStatus === 'learned'  && !learned.has(s.n)) return false;
+    if (fStatus === 'unlearned'&& learned.has(s.n))  return false;
+    if (fType   !== 'all'      && s.type !== fType)  return false;
+    if (fTier   === 'S'  && s.tier !== 'S')          return false;
+    if (fTier   === 'A'  && s.tier !== 'A')          return false;
+    if (fTier   === 'SA' && s.tier !== 'S' && s.tier !== 'A') return false;
+    if (search && !(s.name+' '+s.loc+' '+s.note+' '+s.zone).toLowerCase().includes(search)) return false;
+    return true;
+  });
+
+  list.sort((a,b) => {
+    if (fSort==='level-asc')  return a.minLv-b.minLv||a.n-b.n;
+    if (fSort==='level-desc') return b.minLv-a.minLv||a.n-b.n;
+    if (fSort==='name')       return a.name.localeCompare(b.name);
+    return a.n-b.n;
+  });
+
+  const container = document.getElementById('spell-list');
+  if (!list.length) { container.innerHTML='<div class="empty">No spells match your filters.</div>'; return; }
+
+  container.innerHTML = list.map(s => {
+    const isL  = learned.has(s.n);
+    const reach = s.minLv <= myLv;
+    const lvLabel = s.minLv<=1 ? 'Any level' : 'Lv. '+s.minLv;
+    return `<div class="spell-row${isL?' learned':''}" onclick="toggle(${s.n})" role="button" tabindex="0"
+      onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggle(${s.n})}">
+      <span class="spell-num">#${s.n}</span>
+      <div class="spell-check">${isL?'✓':''}</div>
+      <div class="spell-info">
+        <div class="spell-name">${s.name} ${tierIcon(s.tier)}</div>
+        <div class="spell-loc">${s.loc}</div>
+        ${s.note?`<div class="spell-note">${s.note}</div>`:''}
+      </div>
+      <div class="badges">
+        <span class="badge ${s.type}">${TYPE_LABELS[s.type]||s.type}</span>
+        <span class="badge lvl ${reach?'reach':'locked'}">${lvLabel}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── ZONE VIEW ────────────────────────────────────────────────────────────────
+function renderZone() {
+  const myLv   = +document.getElementById('my-level-z').value;
+  document.getElementById('lv-out-z').textContent = myLv;
+  const search  = document.getElementById('search-z').value.toLowerCase();
+  const fStatus = document.getElementById('fz-status').value;
+
+  // Group spells by zone
+  const zoneMap = {};
+  SPELLS.forEach(s => {
+    const z = s.zone || 'Other';
+    if (!zoneMap[z]) zoneMap[z] = [];
+    zoneMap[z].push(s);
+  });
+
+  const container = document.getElementById('zone-view');
+  let html = '';
+
+  // Sort zones: reachable first, then alphabetical within each group
+  const zones = Object.keys(zoneMap).sort((a,b) => {
+    const aReach = zoneMap[a].some(s=>s.minLv<=myLv);
+    const bReach = zoneMap[b].some(s=>s.minLv<=myLv);
+    if (aReach && !bReach) return -1;
+    if (!aReach && bReach) return 1;
+    return a.localeCompare(b);
+  });
+
+  zones.forEach(zone => {
+    let spells = zoneMap[zone].filter(s => {
+      if (fStatus==='learned'   && !learned.has(s.n)) return false;
+      if (fStatus==='unlearned' && learned.has(s.n))  return false;
+      if (search && !(s.name+' '+s.loc+' '+s.note+' '+zone).toLowerCase().includes(search)) return false;
+      return true;
+    });
+    if (!spells.length) return;
+
+    const learnedHere = spells.filter(s=>learned.has(s.n)).length;
+    const allReachable = spells.every(s=>s.minLv<=myLv);
+    const anyReachable = spells.some(s=>s.minLv<=myLv);
+    const isOpen = !!zoneOpen[zone];
+    const minLvZone = Math.min(...spells.map(s=>s.minLv));
+    const zoneLvLabel = minLvZone<=1 ? 'Any level' : `Lv. ${minLvZone}+`;
+    const reachClass = allReachable ? 'reach' : anyReachable ? 'reach' : 'locked';
+
+    html += `<div class="zone-section">
+      <div class="zone-header" onclick="toggleZone('${zone.replace(/'/g,"\\'")}')">
+        <div class="zone-title">
+          <span>${isOpen?'▾':'▸'}</span>
+          <span>${zone}</span>
+          <span class="badge lvl ${reachClass}" style="font-size:.62rem">${zoneLvLabel}</span>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <span class="zone-prog">${learnedHere}/${spells.length} learned</span>
+        </div>
+      </div>
+      <div class="zone-body${isOpen?' open':''}">
+        ${spells.map(s => {
+          const isL  = learned.has(s.n);
+          const reach = s.minLv <= myLv;
+          const lvLabel = s.minLv<=1?'Any level':'Lv. '+s.minLv;
+          return `<div class="zone-spell-row${isL?' learned':''}" onclick="toggle(${s.n})" role="button" tabindex="0"
+            onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggle(${s.n})}">
+            <span class="spell-num">#${s.n}</span>
+            <div class="spell-check">${isL?'✓':''}</div>
+            <div class="spell-info">
+              <div class="spell-name">${s.name} ${tierIcon(s.tier)}</div>
+              <div class="spell-loc">${s.loc}</div>
+              ${s.note?`<div class="spell-note">${s.note}</div>`:''}
+            </div>
+            <div class="badges">
+              <span class="badge ${s.type}">${TYPE_LABELS[s.type]||s.type}</span>
+              <span class="badge lvl ${reach?'reach':'locked'}">${lvLabel}</span>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  });
+
+  container.innerHTML = html || '<div class="empty">No zones match your filters.</div>';
+}
+
+function toggleZone(zone) {
+  zoneOpen[zone] = !zoneOpen[zone];
+  renderZone();
+}
+
+// ─── EVENT LISTENERS ─────────────────────────────────────────────────────────
+['my-level','search','f-reach','f-status','f-type','f-tier','f-sort'].forEach(id => {
+  document.getElementById(id).addEventListener('input', render);
+  document.getElementById(id).addEventListener('change', render);
+});
+['my-level-z','search-z','fz-status'].forEach(id => {
+  document.getElementById(id).addEventListener('input', render);
+  document.getElementById(id).addEventListener('change', render);
+});
+document.getElementById('reset-btn').addEventListener('click', () => {
+  if (confirm('Reset all learned spells? This cannot be undone.')) { learned.clear(); save(); render(); }
+});
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+load();
+render();
+</script>
+</body>
+</html>
